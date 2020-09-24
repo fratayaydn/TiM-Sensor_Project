@@ -80,11 +80,11 @@ int main(void) {
 	SystemClock_Config();
 
 	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_SPI1_Init();
-	MX_TIM1_Init();
-	MX_TIM3_Init();
-	MX_SPI2_Init();
+	GPIO_Init();
+	SPI1_Init();
+	TIM1_Init();
+	TIM3_Init();
+	SPI2_Init();
 
 
 	HAL_TIM_Base_Start_IT(&htim1); /* Start TIM1 in interrupt mode */
