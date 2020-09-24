@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
  * @file           : main.c
@@ -16,32 +15,17 @@
  *
  ******************************************************************************
  */
-/* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "ADXL355.h"
 #include "CPR_math.h"
-
 #include "st7735.h"
-/* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-/* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
 #define LENGTH_SAMPLES 1024
 #define CHAR_BUFF_SIZE 4
-/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 SPI_HandleTypeDef hspi1;
@@ -50,7 +34,6 @@ SPI_HandleTypeDef hspi2;
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim3;
 
-/* USER CODE BEGIN PV */
 ADXL355_HandleTypeDef ADXL355_t;
 
 float32_t aInput_f32[LENGTH_SAMPLES];
@@ -67,16 +50,14 @@ uint16_t bufferCounter;
 float32_t pressure_inMM = 0;
 uint8_t readFlag = 0;
 uint8_t sleepFlag = 0;
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_SPI1_Init(void);
-static void MX_TIM1_Init(void);
-static void MX_TIM3_Init(void);
-static void MX_SPI2_Init(void);
-/* USER CODE BEGIN PFP */
+static void GPIO_Init(void);
+static void SPI1_Init(void);
+static void TIM1_Init(void);
+static void TIM3_Init(void);
+static void SPI2_Init(void);
 static void Sleep_Mode(void);
 static void Display_Pressure(SPI_HandleTypeDef *hspi, float32_t pressure,
 		uint8_t digitsAfterDot);
@@ -84,37 +65,19 @@ static void _float_to_char(float32_t x, char *p, uint8_t size,
 		uint8_t digitsAfterDot);
 static void Sensor_Init(void);
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
  * @brief  The application entry point.
  * @retval int
  */
 int main(void) {
-	/* USER CODE BEGIN 1 */
-
-	/* USER CODE END 1 */
-
 	/* MCU Configuration--------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
 
-	/* USER CODE BEGIN Init */
-
-	/* USER CODE END Init */
-
 	/* Configure the system clock */
 	SystemClock_Config();
-
-	/* USER CODE BEGIN SysInit */
-
-	/* USER CODE END SysInit */
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
@@ -122,7 +85,7 @@ int main(void) {
 	MX_TIM1_Init();
 	MX_TIM3_Init();
 	MX_SPI2_Init();
-	/* USER CODE BEGIN 2 */
+
 
 	HAL_TIM_Base_Start_IT(&htim1); /* Start TIM1 in interrupt mode */
 	HAL_TIM_Base_Start_IT(&htim3); /* Start TIM1 in interrupt mode */
@@ -130,10 +93,8 @@ int main(void) {
 	ST7735_Init(&hspi2); /* Initialize display */
 	Sensor_Init(); /* Initialize accelerometer sensor */
 	HAL_Delay(1000); /* 1 second delay for initialization */
-	/* USER CODE END 2 */
 
 	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
 	while (1) {
 
 		/* If readFlag is set read data from accelerometer */
@@ -168,11 +129,7 @@ int main(void) {
 			sleepFlag = 0;
 		}
 
-		/* USER CODE END WHILE */
-
-		/* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
 }
 
 /**
@@ -220,15 +177,9 @@ void SystemClock_Config(void) {
  * @param None
  * @retval None
  */
-static void MX_SPI1_Init(void) {
+static void SPI1_Init(void) {
 
-	/* USER CODE BEGIN SPI1_Init 0 */
 
-	/* USER CODE END SPI1_Init 0 */
-
-	/* USER CODE BEGIN SPI1_Init 1 */
-
-	/* USER CODE END SPI1_Init 1 */
 	/* SPI1 parameter configuration*/
 	hspi1.Instance = SPI1;
 	hspi1.Init.Mode = SPI_MODE_MASTER;
@@ -245,9 +196,6 @@ static void MX_SPI1_Init(void) {
 	if (HAL_SPI_Init(&hspi1) != HAL_OK) {
 		Error_Handler();
 	}
-	/* USER CODE BEGIN SPI1_Init 2 */
-
-	/* USER CODE END SPI1_Init 2 */
 
 }
 
@@ -256,15 +204,8 @@ static void MX_SPI1_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_SPI2_Init(void) {
+static void SPI2_Init(void) {
 
-	/* USER CODE BEGIN SPI2_Init 0 */
-
-	/* USER CODE END SPI2_Init 0 */
-
-	/* USER CODE BEGIN SPI2_Init 1 */
-
-	/* USER CODE END SPI2_Init 1 */
 	/* SPI2 parameter configuration*/
 	hspi2.Instance = SPI2;
 	hspi2.Init.Mode = SPI_MODE_MASTER;
@@ -281,9 +222,7 @@ static void MX_SPI2_Init(void) {
 	if (HAL_SPI_Init(&hspi2) != HAL_OK) {
 		Error_Handler();
 	}
-	/* USER CODE BEGIN SPI2_Init 2 */
 
-	/* USER CODE END SPI2_Init 2 */
 
 }
 
@@ -292,18 +231,12 @@ static void MX_SPI2_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_TIM1_Init(void) {
-
-	/* USER CODE BEGIN TIM1_Init 0 */
-
-	/* USER CODE END TIM1_Init 0 */
+static void TIM1_Init(void) {
 
 	TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
 	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
-	/* USER CODE BEGIN TIM1_Init 1 */
 
-	/* USER CODE END TIM1_Init 1 */
 	htim1.Instance = TIM1;
 	htim1.Init.Prescaler = 9999;
 	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -323,9 +256,7 @@ static void MX_TIM1_Init(void) {
 	if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK) {
 		Error_Handler();
 	}
-	/* USER CODE BEGIN TIM1_Init 2 */
 
-	/* USER CODE END TIM1_Init 2 */
 
 }
 
@@ -334,18 +265,13 @@ static void MX_TIM1_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_TIM3_Init(void) {
+static void TIM3_Init(void) {
 
-	/* USER CODE BEGIN TIM3_Init 0 */
-
-	/* USER CODE END TIM3_Init 0 */
 
 	TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
 	TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
-	/* USER CODE BEGIN TIM3_Init 1 */
 
-	/* USER CODE END TIM3_Init 1 */
 	htim3.Instance = TIM3;
 	htim3.Init.Prescaler = 124;
 	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -364,9 +290,7 @@ static void MX_TIM3_Init(void) {
 	if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK) {
 		Error_Handler();
 	}
-	/* USER CODE BEGIN TIM3_Init 2 */
 
-	/* USER CODE END TIM3_Init 2 */
 
 }
 
@@ -375,7 +299,7 @@ static void MX_TIM3_Init(void) {
  * @param None
  * @retval None
  */
-static void MX_GPIO_Init(void) {
+static void GPIO_Init(void) {
 	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
 	/* GPIO Ports Clock Enable */
@@ -422,7 +346,6 @@ static void MX_GPIO_Init(void) {
 
 }
 
-/* USER CODE BEGIN 4 */
 /**
  * @brief Initialize ADXL355 sensor unit
  *
@@ -555,7 +478,6 @@ void TIM3_IRQHandler(void) {
 
 	}
 }
-/* USER CODE END 4 */
 
 /**
  * @brief  This function is executed in case of error occurrence
@@ -563,10 +485,7 @@ void TIM3_IRQHandler(void) {
  * @return None
  */
 void Error_Handler(void) {
-	/* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
-
-	/* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -579,10 +498,8 @@ void Error_Handler(void) {
   */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
 

@@ -124,7 +124,7 @@ void CPR_Reconstruct_st(float32_t *aInput, uint16_t fftSize, uint8_t ifftFlag,
 }
 
 /**
- * @brief Calculate compression depth(millimeters) by reconstructing Compression Depth signal(S(k)) and its pick to pick value
+ * @brief Calculate compression depth(millimeters) by reconstructing Compression Depth signal(S(k)) and its peak to peak value
  *
  * @param Input acceleration signal array for FFT
  * @param Size of FFT
